@@ -1,5 +1,6 @@
 %!PS-Adobe-3.0
-%%Creator: Matthew Newton
+%%Creator: Matthew Newton / Ben Cohen
+%%BoundingBox: 0 0 612 792
 %%EndComments
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -12,6 +13,7 @@
 /suffix (L4) def
 /number 1 def
 /bordercolour [ 0.0 0.8 1 ] def
+/lettercolour [ 0.0 0.8 1 ] def
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % There should be no need to edit the code below...
@@ -196,18 +198,17 @@ eDImj"F)Q2A@qCgGOuY1:ATVm"@r#drB9KiQP'(hWFDtYuCM@[!I?IP~>
   /mm { 25.4 div } def
   /in { } def
 
-  /topwid 67 mm def  % width of top bc
-  /botwid 37 mm def  % width of bottom bc
-  /vgap 1 mm def     % horiz gap between codes
-  /tophi 7 mm def    % height of bottom code
-  /bothi 7 mm def    % height of bottom code
-  /bottom 3 mm def   % bottom gap
+  /bcwid 65.4 mm def  % width of barcode
+  /bchi 11.2 mm def   % height of barcode
+  /txthi 4.0 mm def    % height of text
+  /vgap  0.4 mm def   % gap between code and text
+  /bottom 0 mm def   % bottom gap
   /left 6 mm def
-  /width 78 mm def
-  /height 16.5 mm def
+  /width 76.2 mm def
+  /height 16.0 mm def
 
-  /message (This edge of label toward hub of tape) def
-  /messageypos 2.5 def
+  /message (This edge of label away from hub of tape) def
+  /messageypos 36 def
   /messageptsize 5 def
 
   /textsize 9 def
@@ -245,58 +246,50 @@ eDImj"F)Q2A@qCgGOuY1:ATVm"@r#drB9KiQP'(hWFDtYuCM@[!I?IP~>
     0 0 lineto
     stroke
   grestore
- 
-  % draw the top barcode
+
+  % draw the barcode
   gsave
     left 72 mul
-    bottom 72 mul bothi 72 mul add vgap 72 mul add
-    moveto
-    topwid barwid div tophi scale
-    c39 dup (ren) get exec
-  grestore
-
-  % draw the bottom barcode
-  gsave
-    left 72 mul botwid 72 mul add
     bottom 72 mul
     moveto 
-    botwid barwid div neg bothi scale
+    bcwid barwid div bchi scale
     c39 dup (ren) get exec
   grestore
 
-  % draw the info text
-  gsave
-    /Helvetica findfont
-    messageptsize scalefont setfont
-    newpath
-    width 72 mul 2 div message stringwidth pop 2 div sub
-    messageypos moveto
-    message show
-  grestore
- 
+   % draw the info text
+   gsave
+     /Helvetica findfont
+     messageptsize scalefont setfont
+     newpath
+     width 72 mul 3 div message stringwidth pop 2 div sub
+     messageypos moveto
+     message show
+   grestore
+
   % create the text
   %
   % set starting X position: first get the right X pos of the top
   % barcode:
-  left 72 mul topwid 72 mul add
+  left 72 mul bcwid 72 mul add
+  %bottom 72 mul bchi 72 mul add vgap 72 mul add
   % and then subtract the length of our bit of text:
   code length 2 sub letterwidth mul sub
   % and adust slightly for the border. hack alert.
   3 sub
   % now get the y position (half way up the bottom barcode):
-  bothi 72 mul 2 div bottom 72 mul add
+  txthi 72 mul 2 div bottom 72 mul add bchi 72 mul add vgap 72 mul add
   % background colour
   2 copy
-  userdict /bordercolour known {
+  userdict /lettercolour known {
     gsave
-    bordercolour aload pop setrgbcolor
+    lettercolour aload pop setrgbcolor
     2 copy
     % set x position of outer (semi-) border
     exch letterwidth sub rectadjust add exch
     % and y position
-    bothi 72 mul 2 div sub
+    txthi 72 mul 2 div sub
     code length 2 sub letterwidth mul
-    bothi 72 mul rectfill
+    txthi 72 mul rectfill
     grestore
   } if
   newpath
@@ -312,11 +305,11 @@ eDImj"F)Q2A@qCgGOuY1:ATVm"@r#drB9KiQP'(hWFDtYuCM@[!I?IP~>
         gsave
           dup cvn colours exch get aload pop setrgbcolor
           % get bottom left hand position for bg rectangle
-          currentpoint bothi 72 mul 2 div sub
+          currentpoint txthi 72 mul 2 div sub
           % adjust x-value for position of letter
           exch letterwidth sub rectadjust add exch
           % set rectangle width/height and draw
-          letterwidth bothi 72 mul rectfill
+          letterwidth txthi 72 mul rectfill
         grestore
       } if
       % find its width / 2
@@ -347,29 +340,25 @@ eDImj"F)Q2A@qCgGOuY1:ATVm"@r#drB9KiQP'(hWFDtYuCM@[!I?IP~>
     % set x position of outer (semi-) border
     exch letterwidth sub rectadjust add exch
     % and y position
-    bothi 72 mul 2 div sub
+    txthi 72 mul 2 div sub
     newpath
     1 setlinewidth
     code length 1 sub letterwidth mul
-    bothi 72 mul rectstroke
+    txthi 72 mul rectstroke
   grestore
 
   end
 
 } bind def
 
-<< /PageSize [ 595 841 ] /ImagingBBox null >> setpagedevice
+<< /PageSize [ 612 792 ] /ImagingBBox null >> setpagedevice
 
-/gridx 3 def
-/gridy 11 def
-/xstep 78   72 mul 25.4 div def
-/ystep 16.5 72 mul 25.4 div def
-/leftborder 36 def % 0.5 in
-/bottomborder 36 def % 0.5 in
-
-% we want landscape pages
-0 841 translate
--90 rotate
+/gridx 2 def
+/gridy 16 def
+/xstep 97.0 72 mul 25.4 div def
+/ystep 16.0 72 mul 25.4 div def
+/leftborder 60.75 def
+/bottomborder 36 def
 
 0 1 gridx 1 sub {
   /x exch def
