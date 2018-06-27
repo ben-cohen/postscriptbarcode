@@ -5,13 +5,36 @@
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Edit the following settings to define the TLA and the
-% number to start the sheet at (there are 33 labels per
+% number to start the sheet at (there are 32 labels per
 % sheet).
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 /prefix (MCN) def
 /suffix (L4) def
 /number 1 def
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Alternatively, define the following array of individual
+% tape ids.  No label will be printed for positions where
+% there is an empty string of after the end of the array.
+% This will print multiple pages as necessary.
+% If tapeids is non-empty then it will take precedence
+% over prefix, suffix and number.
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+/tapeids [ ] def
+
+% For example if you uncomment this you will get three
+% labels:
+
+%/tapeids [ (BACK12L1) (ABC123L5) (A1B2C3L1) ] def
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Edit the following settings to define the colour of the
+% line around the tape id and the background for the
+% letters.
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
 /bordercolour [ 0.0 0.8 1 ] def
 /lettercolour [ 0.0 0.8 1 ] def
 
@@ -251,7 +274,7 @@ eDImj"F)Q2A@qCgGOuY1:ATVm"@r#drB9KiQP'(hWFDtYuCM@[!I?IP~>
   gsave
     left 72 mul
     bottom 72 mul
-    moveto 
+    moveto
     bcwid barwid div bchi scale
     c39 dup (ren) get exec
   grestore
@@ -332,7 +355,7 @@ eDImj"F)Q2A@qCgGOuY1:ATVm"@r#drB9KiQP'(hWFDtYuCM@[!I?IP~>
       show
     grestore
     % and the border
-  stroke 
+  stroke
   gsave
     userdict /bordercolour known {
       bordercolour aload pop setrgbcolor
@@ -360,20 +383,19 @@ eDImj"F)Q2A@qCgGOuY1:ATVm"@r#drB9KiQP'(hWFDtYuCM@[!I?IP~>
 /leftborder 60.75 def
 /bottomborder 36 def
 
-0 1 gridx 1 sub {
-  /x exch def
-  0 1 gridy 1 sub {
-   /y exch def
-   % roll number around after 999, back to 0
-   number 999 gt {
-     /number 0 def
-   } if
+tapeids length 0 eq {
+  /tapeids gridx gridy mul array def
+  /tapeidsidx 0 def
+  0 1 gridx 1 sub {
+    /x exch def
+    0 1 gridy 1 sub {
+     /y exch def
 
-   x xstep mul leftborder add
-   %gridy y sub 1 sub ystep mul bottomborder add
-   y ystep mul bottomborder add
-   gsave
-     translate
+     % roll number around after 999, back to 0
+     number 999 gt {
+       /number 0 def
+     } if
+
      % create new string to hold the code
      /s suffix length prefix length 3 add add string def
      % set all characters to "0" to start with
@@ -387,11 +409,51 @@ eDImj"F)Q2A@qCgGOuY1:ATVm"@r#drB9KiQP'(hWFDtYuCM@[!I?IP~>
      % put the number in
      /numstring number 3 string cvs def
      s prefix length 3 numstring length sub add numstring  putinterval
-     s LTOlabel
-     /number number 1 add def
-   grestore
-  } for
-} for
 
-showpage
+     % save it to the array
+     tapeids tapeidsidx s put
+
+     % increment tape number and array index
+     /number number 1 add def
+     /tapeidsidx tapeidsidx 1 add def
+    } for
+  } for
+} if
+
+/tapeidsidx 0 def
+{
+  % stop if we're off the end of the array
+  tapeidsidx tapeids length ge { exit } if
+
+  0 1 gridx 1 sub {
+    /x exch def
+
+    % stop if we're off the end of the array
+    tapeidsidx tapeids length ge { exit } if
+
+    0 1 gridy 1 sub {
+     /y exch def
+
+     % stop if we're off the end of the array
+     tapeidsidx tapeids length ge { exit } if
+
+     % get the next tape id
+     /s tapeids tapeidsidx get def
+
+     % draw the label
+     x xstep mul leftborder add
+     %gridy y sub 1 sub ystep mul bottomborder add
+     y ystep mul bottomborder add
+     gsave
+       translate
+       s LTOlabel
+     grestore
+
+     % increment array index
+     /tapeidsidx tapeidsidx 1 add def
+    } for
+  } for
+
+  showpage
+} loop
 
