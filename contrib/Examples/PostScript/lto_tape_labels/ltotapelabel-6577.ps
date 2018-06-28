@@ -3,6 +3,9 @@
 %%BoundingBox: 0 0 612 792
 %%EndComments
 
+% Print LTO tape labels to Avery 6577 (also Avery 6571
+% and OnlineLabels OL173)
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Edit the following settings to define the TLA and the
 % number to start the sheet at (there are 32 labels per
@@ -25,9 +28,9 @@
 /tapeids [ ] def
 
 % For example if you uncomment this you will get three
-% labels:
+% labels with a gap between the first and second:
 
-%/tapeids [ (BACK12L1) (ABC123L5) (A1B2C3L1) ] def
+%/tapeids [ (BACK12L1) () (ABC123L5) (A1B2C3L1) ] def
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Edit the following settings to define the colour of the
@@ -251,7 +254,7 @@ eDImj"F)Q2A@qCgGOuY1:ATVm"@r#drB9KiQP'(hWFDtYuCM@[!I?IP~>
     /9 [ 0.5 0 0.7 ]
   >> def
 
-  /c39 code (includecheck dontdraw) /code39 /uk.co.terryburton.bwipp findresource exec def
+  /c39 code (dontdraw) /code39 /uk.co.terryburton.bwipp findresource exec def
   /barwid c39 (sbs) get 0 exch {add} forall 72 div def
 
   % set clipping to outside of label
@@ -440,14 +443,17 @@ tapeids length 0 eq {
      % get the next tape id
      /s tapeids tapeidsidx get def
 
-     % draw the label
-     x xstep mul leftborder add
-     %gridy y sub 1 sub ystep mul bottomborder add
-     y ystep mul bottomborder add
-     gsave
-       translate
-       s LTOlabel
-     grestore
+     % skip label if the tape id is empty
+     s () ne {
+       % draw the label
+       x xstep mul leftborder add
+       %gridy y sub 1 sub ystep mul bottomborder add
+       y ystep mul bottomborder add
+       gsave
+         translate
+         s LTOlabel
+       grestore
+     } if
 
      % increment array index
      /tapeidsidx tapeidsidx 1 add def
